@@ -1,0 +1,49 @@
+erDiagram
+    USERS ||--o{ CHATS : "создаёт"
+    USERS ||--o{ CHAT_MEMBERS : "состоит"
+    CHATS ||--|{ CHAT_MEMBERS : "содержит"
+    USERS ||--o{ MESSAGES : "отправляет"
+    CHATS ||--o{ MESSAGES : "хранит"
+    USERS o|--o{ AUDIT_LOGS : "выполняет"
+
+    USERS {
+        uuid id PK
+        varchar_32 username UK
+        varchar_100 password_hash
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    CHATS {
+        uuid id PK
+        chat_type_enum type
+        varchar_100 title "NULL для DIRECT"
+        uuid created_by FK
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    CHAT_MEMBERS {
+        uuid chat_id PK, FK
+        uuid user_id PK, FK
+        chat_member_role_enum role
+        timestamptz joined_at
+    }
+    MESSAGES {
+        uuid id PK
+        uuid chat_id FK
+        uuid sender_id FK
+        text content
+        uuid client_message_id
+        timestamptz created_at
+    }
+    AUDIT_LOGS {
+        uuid id PK
+        uuid user_id FK, nullable
+        varchar_80 action
+        varchar_50 entity_type
+        uuid entity_id nullable
+        jsonb metadata
+        timestamptz created_at
+    }
+
+%% Ограничения: PK chat_members(chat_id, user_id); UNIQUE messages(sender_id, client_message_id).
+%% Индексы: chat_members(user_id, chat_id); messages(chat_id, created_at DESC, id DESC); audit_logs(created_at DESC).

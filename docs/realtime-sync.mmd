@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant A as Пользователь A
+    participant API as REST / ChatsService
+    participant R as RealtimeRegistryService
+    participant UA as user:<A>
+    participant UB as user:<B>
+    participant B as Пользователь B
+
+    A->>API: создать DIRECT или GROUP с B
+    API->>R: chat_list_changed(chatId, CREATED)
+    R->>UA: chat_list_changed
+    R->>UB: chat_list_changed
+    UB-->>B: тихий GET /chats, новый чат в sidebar
+
+    A->>R: message_created после INSERT
+    R->>UB: message_created
+    UB-->>B: preview и порядок sidebar обновлены
+    Note over B: если чат не активен и автор другой, unread +1
+    B->>B: открыть чат
+    Note over B: unread для chatId очищен
+
+    A->>API: изменить роль B или состав GROUP
+    API->>R: chat_details_changed(chatId, ROLE_CHANGED)
+    R->>UB: chat_details_changed
+    UB-->>B: GET /chats/:chatId, роль и участники обновлены
+    Note over B: reload не требуется

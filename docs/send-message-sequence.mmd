@@ -1,0 +1,39 @@
+sequenceDiagram
+    autonumber
+    participant A as Клиент A
+    participant G as Socket.IO Gateway
+    participant J as JWT / user context
+    participant C as ChatsService
+    participant M as MessagesService
+    participant DB as PostgreSQL
+    participant R as RealtimeRegistryService
+    participant UA as user:<A>
+    participant UB as user:<B>
+    participant B as Клиент B
+
+    A->>G: send_message(chatId, content, clientMessageId)
+    G->>J: JWT уже проверен в handshake
+    G->>M: create(A, payload)
+    M->>C: requireMembership(chatId, A)
+    C-->>M: доступ подтверждён
+    M->>DB: найти (sender_id, client_message_id)
+
+    alt новое сообщение
+        DB-->>M: запись не найдена
+        M->>DB: INSERT messages, затем SELECT sender
+        DB-->>M: сохранённое сообщение
+        M-->>G: message, deduplicated=false
+        G->>C: getMemberUserIds(chatId)
+        C-->>G: A, B, ...
+        G->>R: emitMessageCreated(participants, message)
+        R->>UA: message_created(message)
+        R->>UB: message_created(message)
+        UA-->>A: новое сообщение / merge optimistic copy
+        UB-->>B: новое сообщение, preview, unread при неактивном чате
+        G-->>A: ack { ok: true, message }
+    else повтор с тем же clientMessageId
+        DB-->>M: существующая запись
+        M-->>G: message, deduplicated=true
+        Note over G,R: второй INSERT и второй broadcast не выполняются
+        G-->>A: ack { ok: true, deduplicated: true }
+    end

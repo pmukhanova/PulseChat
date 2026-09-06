@@ -1,0 +1,36 @@
+flowchart LR
+    subgraph Client["Браузер пользователя"]
+        React["React + TypeScript"]
+        RestClient["Axios / REST"]
+        SocketClient["socket.io-client"]
+        LocalState["Локальное состояние\nunread: Record<chatId, number>"]
+        React --> RestClient
+        React --> SocketClient
+        React --> LocalState
+    end
+
+    Nginx["Nginx\nстатические файлы и reverse proxy"]
+
+    subgraph Backend["NestJS: модульный монолит"]
+        Rest["REST controllers\nauth, users, chats, messages"]
+        Gateway["Socket.IO Gateway\nJWT handshake, join/leave, send_message"]
+        Services["Auth · Chats · Messages · Audit"]
+        Registry["RealtimeRegistryService\nuser:<userId> rooms"]
+        ORM["TypeORM + migrations"]
+        Rest --> Services
+        Gateway --> Services
+        Services --> Registry
+        Services --> ORM
+    end
+
+    DB[("PostgreSQL\nusers · chats · chat_members\nmessages · audit_logs")]
+
+    RestClient <-->|"HTTPS /api, Bearer JWT"| Nginx
+    SocketClient <-->|"Socket.IO /socket.io, auth.token"| Nginx
+    Nginx <-->|"REST"| Rest
+    Nginx <-->|"Socket.IO"| Gateway
+    Registry -. "message_created\nchat_list_changed\nchat_details_changed" .-> SocketClient
+    ORM <-->|"SQL"| DB
+
+    Note["Docker Compose: frontend + backend + postgres\nОдин backend-процесс, без broker и Redis"]
+    Note -.-> Backend
