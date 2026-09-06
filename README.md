@@ -1,6 +1,6 @@
 # PulseChat
 
-PulseChat - учебный полнофункциональный мессенджер для кейса №1 практики VK Education. Проект показывает регистрацию и JWT-авторизацию, личные и групповые чаты, роли, историю с курсорной пагинацией, поиск и доставку сообщений в реальном времени.
+PulseChat - учебный полнофункциональный мессенджер. Проект показывает регистрацию и JWT-авторизацию, личные и групповые чаты, роли, историю с курсорной пагинацией, поиск и доставку сообщений в реальном времени.
 
 ## Архитектура
 
@@ -245,20 +245,8 @@ ER-диаграмма: `docs/erd.svg`. Рабочие SQL-примеры с `JOI
 - `docs/video-script.md` - сценарий записи;
 - `artifacts/demo/pulse-chat-demo.webm` - короткая техническая запись успешного Playwright-прогона;
 - `artifacts/demo/pulse-chat-presentation-demo.webm` - основное фактическое видео для защиты;
-- `docs/presentation-outline.md`, `docs/defense-script.md` и `artifacts/presentation.pptx` - презентация и сценарий выступления;
-- `artifacts/pulse-chat-report.pdf` - финальный PDF-отчёт с четырьмя диаграммами;
-- `docs/contribution.md` - индивидуальный вклад;
-- `docs/defense-notes.md` - шпаргалка для защиты;
-- `artifacts/pulse-chat-source.zip` - чистый архив исходников с корневой папкой `pulse-chat/`;
-- `artifacts/pulse-chat-submission.zip` - полный пакет сдачи из 16 файлов: исходники, PDF, PPTX, основное видео, четыре SVG-диаграммы, модель авторизации, роли, runbook, вклад, testing, сценарий защиты и SQL-примеры.
-
-Архивы воспроизводимо пересоздаются командами:
-
-```bash
-./scripts/create_submission_archive.sh
-./scripts/create_full_submission_archive.sh
-```
+- `docs/presentation-outline.md`, `docs/defense-script.md` и `artifacts/presentation.pptx` - презентация и 
 
 ## Автор
 
-Андрей Потрикеев - анализ требований, проектирование БД и API, backend, frontend, WebSocket, тестирование, документация и подготовка демонстрации - 100%.
+Андрей Потрикеев - анализ требований, проектирование БД и API, backend, frontend, WebSocket, тестирование - Муханова Полина 100%.
